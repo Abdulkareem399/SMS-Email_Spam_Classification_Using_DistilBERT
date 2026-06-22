@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spam Classification AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fa-solid fa-robot"></i>
+                <h1>SpamShield <span>AI</span></h1>
+            </div>
+            <p>Analyze text messages and emails for potential spam using fine-tuned DistilBERT.</p>
+        </header>
+
+        <main class="main-grid">
+            
+            <section class="card input-card">
+                <h2><i class="fa-solid fa-pen-to-square"></i> Input Message</h2>
+                <p class="subtitle">Paste the email or text message you want to check below.</p>
+                
+                <form id="spam-form">
+                    <textarea 
+                        id="message-input" 
+                        placeholder="Type or paste your message here (e.g., 'Congratulations! You won a free prize...')" 
+                        required></textarea>
+                    
+                    <div class="form-footer">
+                        <span id="char-count">0 characters</span>
+                        <button type="submit" class="btn btn-primary">
+                            <span>Analyze Text</span>
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="samples">
+                    <h3>Try a sample:</h3>
+                    <div class="sample-buttons">
+                        <button class="sample-btn" data-text="Congratulations! You have won a FREE iPhone 16 and a cash prize of $5,000. Claim your reward now by clicking this link: www.claim-now-prize.com. Hurry! Offer expires today.">
+                            Spam Example
+                        </button>
+                        <button class="sample-btn" data-text="Hey, are we still meeting up for lunch today at 1 PM?">
+                            Ham Example
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card result-card empty" id="result-section">
+                <div class="placeholder-state">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <h3>Awaiting Analysis</h3>
+                    <p>Enter a message and click analyze to see the AI model prediction metrics.</p>
+                </div>
+
+                <div class="result-state">
+                    <h2><i class="fa-solid fa-chart-simple"></i> Analysis Result</h2>
+                    
+                    <div class="prediction-badge status-spam" id="prediction-status">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span id="prediction-label">SPAM</span>
+                    </div>
+
+                    <div class="confidence-container">
+                        <div class="confidence-header">
+                            <span>Model Confidence</span>
+                            <strong id="confidence-percentage">0.00%</strong>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="confidence-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="model-info">
+                        <h3><i class="fa-solid fa-circle-info"></i> Model Insights</h3>
+                        <ul>
+                            <li><strong>Architecture:</strong> DistilBERT (Sequence Classification)</li>
+                            <li><strong>Evaluation Accuracy:</strong> 99.50%</li>
+                            <li><strong>Validation F1-Score:</strong> 98.15%</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Character counter
+        const textarea = document.getElementById('message-input');
+        const charCount = document.getElementById('char-count');
+        textarea.addEventListener('input', () => {
+            charCount.textContent = `${textarea.value.length} characters`;
+        });
+
+        // Click sample buttons to load text
+        document.querySelectorAll('.sample-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                textarea.value = button.getAttribute('data-text');
+                charCount.textContent = `${textarea.value.length} characters`;
+            });
+        });
+
+        // Submit message data to Flask API
+        const form = document.getElementById('spam-form');
+        const resultSection = document.getElementById('result-section');
+        const predictionLabel = document.getElementById('prediction-label');
+        const predictionStatus = document.getElementById('prediction-status');
+        const confidencePercentage = document.getElementById('confidence-percentage');
+        const confidenceFill = document.getElementById('confidence-fill');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const textValue = textarea.value.trim();
+            if (!textValue) return;
+
+            try {
+                // Fetch predictions from Python API
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: textValue })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Reveal the result view container state
+                    resultSection.classList.remove('empty');
+                    
+                    // Assign text metrics elements
+                    predictionLabel.textContent = data.label.toUpperCase();
+                    confidencePercentage.textContent = data.confidence;
+                    confidenceFill.style.width = `${data.confidence_raw}%`;
+
+                    // Toggle theme color palette based on prediction label
+                    if (data.label === 'spam') {
+                        predictionStatus.className = "prediction-badge status-spam";
+                        predictionStatus.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <span>SPAM</span>`;
+                    } else {
+                        predictionStatus.className = "prediction-badge status-ham";
+                        predictionStatus.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>HAM (SAFE)</span>`;
+                    }
+                } else {
+                    alert("Error: Unable to process prediction from backend.");
+                }
+            } catch (err) {
+                console.error("Connection failed:", err);
+                alert("Failed to connect to the Flask server. Make sure app.py is running.");
+            }
+        });
+    </script>
+</body>
+</html>

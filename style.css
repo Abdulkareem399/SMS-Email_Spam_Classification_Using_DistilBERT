@@ -1,0 +1,308 @@
+/* --- CSS Reset & Variables --- */
+:root {
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --card-bg: #ffffff;
+    --text-main: #2d3748;
+    --text-muted: #718096;
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --spam-color: #e53e3e;
+    --spam-bg: #fff5f5;
+    --ham-color: #38a169;
+    --ham-bg: #f0fff4;
+    --border-color: #e2e8f0;
+    --radius: 12px;
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1040px;
+}
+
+/* --- Header --- */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.logo h1 {
+    font-weight: 800;
+    color: #1a202c;
+}
+
+.logo span {
+    color: var(--primary);
+}
+
+header p {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+/* --- Layout Grid --- */
+.main-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+}
+
+@media (max-width: 768px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- Card Architecture --- */
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.card h2 {
+    font-size: 1.25rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+/* --- Form Elements --- */
+textarea {
+    width: 100%;
+    height: 180px;
+    padding: 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    resize: none;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+    color: var(--text-main);
+}
+
+textarea:focus {
+    border-color: var(--primary);
+}
+
+.form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+}
+
+#char-count {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+}
+
+/* --- Samples Section --- */
+.samples {
+    margin-top: 24px;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 16px;
+}
+
+.samples h3 {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.sample-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.sample-btn {
+    background: #f1f5f9;
+    border: 1px solid var(--border-color);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.sample-btn:hover {
+    background: #e2e8f0;
+}
+
+/* --- Result Panel States --- */
+.result-card {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Empty State Styling */
+.result-card.empty .result-state {
+    display: none;
+}
+
+.result-card.empty .placeholder-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    color: var(--text-muted);
+}
+
+.placeholder-state i {
+    font-size: 3.5rem;
+    color: #cbd5e1;
+    margin-bottom: 16px;
+}
+
+/* Active Result Styling */
+.result-card:not(.empty) .placeholder-state {
+    display: none;
+}
+
+.prediction-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 20px 0;
+    letter-spacing: 1px;
+}
+
+.status-spam {
+    background: var(--spam-bg);
+    color: var(--spam-color);
+    border: 1px solid #fed7d7;
+}
+
+.status-ham {
+    background: var(--ham-bg);
+    color: var(--ham-color);
+    border: 1px solid #c6f6d5;
+}
+
+/* Confidence Meter */
+.confidence-container {
+    margin-bottom: 24px;
+}
+
+.confidence-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.progress-bar-bg {
+    background: #edf2f7;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, #818cf8 100%);
+    border-radius: 6px;
+    transition: width 0.4s ease-out;
+}
+
+/* Model stats box */
+.model-info {
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: auto;
+}
+
+.model-info h3 {
+    font-size: 0.9rem;
+    color: var(--text-main);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.model-info ul {
+    list-style: none;
+}
+
+.model-info li {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.model-info li strong {
+    color: var(--text-main);
+}
